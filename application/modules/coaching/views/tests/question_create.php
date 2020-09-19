@@ -1,0 +1,140 @@
+<div class="row justify-content-center">
+
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-body">
+				<?php echo form_open ('coaching/tests_actions/validate_question_create/'.$coaching_id.'/'.$course_id.'/'.$test_id.'/'.$parent_id.'/'.$question_id, array('class'=>'form-horizontal row-border', 'id'=>'validate-1') ); ?>
+
+					<div class="form-group row">
+						<div class="col-md-6">
+							<?php echo form_label ('Type <span class="required text-danger">*</span>', '', array('class'=>' control-label')); ?>
+							<select name="question_type" class="form-control select2-single" id="question-type" <?php if ($question_id > 0) echo 'disabled'; ?> >
+							<?php
+							if (! empty ($question_types)) {
+								foreach ($question_types as $item) {
+									if ($item['paramkey'] == $question_type) {
+										$selected = "selected='selected'";
+									} else {
+										$selected = "";
+									}
+									?>
+									<option value="<?php echo $item['paramkey'];?>" <?php echo $selected; ?>><?php echo $item['paramval'];?></option>
+									<?php 
+								}
+							}
+							?>
+							</select>
+						</div>
+					</div>
+
+					<!--== Question ==-->
+					<div class="form-group">
+						<label class=" control-label">Question <span class="required text-danger">*</span></label>
+						<div class="overflow-hidden">
+							<textarea name="question" class="form-control required tinyeditor " rows="5"  autofocus="true"><?php echo set_value ('question', $result['question']); ?></textarea>
+						</div>
+						<input type="hidden" name="course_id" value="<?php echo $course_id; ?>" >
+					</div>					
+
+					<div class="form-group row">
+						<div class="col-md-6">
+							<?php echo form_label ('Classification <span class="required text-danger">*</span>', '', array('class'=>' control-label')); ?>
+							<select name="classification" class="form-control select2-single required">
+								<?php
+								if (is_array($question_categories)) {
+									foreach ($question_categories as $items) { 
+										if ($question_id > 0) {
+											if ($result['clsf_id'] == $items['paramkey']) {
+												$selected = "selected='selected'";
+											} else {
+												$selected = "";
+											}
+										} else {
+											if ($items['paramkey'] == 5) {
+												$selected = "selected='selected'";
+											} else {
+												$selected = "";
+											}
+										}
+										?>
+										<option value="<?php echo $items['paramkey'];?>" <?php echo $selected; ?>><?php echo $items['paramval'];?></option>
+										<?php 
+									}
+								}
+								?>
+							</select> 
+						</div>
+						
+						<div class="col-md-6">
+							<?php echo form_label ('Difficulty ', '', array('class'=>' control-label')); ?>
+							<select name="difficulty" class="form-control select2-single required"> 
+								<?php
+								if (is_array($question_difficulties)) {
+									foreach ($question_difficulties as $items) { ?>                
+										<option  value="<?php echo $items['paramkey'];?>" <?php if ($result['diff_id'] == $items['paramkey']) echo "selected='selected'"; ?> ><?php echo $items['paramval'];?></option>
+									<?php }
+								}
+								?>
+							</select> 
+						</div>
+					</div>
+
+					<div class="form-group">
+						<?php echo form_label('Marks per question<span class="required">*</span>', '', array('class'=>'control-label')); ?>
+						<div class="w-25">
+							<?php
+							if ($result['marks']) {
+								$marks = $result['marks'];
+							} else {
+								$marks = $question_group['marks'];
+							}							
+							echo form_input(array('type'=>'number', 'name'=>'marks', 'class'=>'form-control required input-width-mini digits', 'min'=>1, 'value'=>set_value('marks', $marks) ));
+							?>
+						</div>
+					</div>
+					
+				</div>
+
+				<hr class="">
+
+				<div class="card-body">					
+					<h4 class="card-title">Answer Choices</h4>
+					<div id="answer-choices">
+						<?php $this->load->view (ANSWER_TEMPLATE . $template, $data); ?>
+					</div>
+				</div>
+
+				<hr class="">
+
+				<div class="card-body">
+					<h4 class="card-title">Feedbacks</h4>
+					<div class="form-group">
+						<?php echo form_label('Question Feedback ', '', array('class'=>' control-label')); ?>
+						<textarea name="question_feedback" class="form-control tinyeditor" rows="5"  autofocus=""><?php echo set_value ('question_feedback', $result['question_feedback']); ?></textarea>
+					</div>
+					<div class="form-group">
+						<?php echo form_label('Answer feedback ', '', array('class'=>' control-label')); ?>
+						<textarea name="answer_feedback" class="form-control tinyeditor" rows="5"  autofocus=""><?php echo set_value ('answer_feedback', $result['answer_feedback']); ?></textarea>
+					</div>
+					<!--== ./Feedback ==-->
+				</div>
+
+				<div class="card-footer"> 
+					<?php
+						echo form_button (array ('name'=>'save', 'value'=>'save', 'type'=>'submit', 'class'=>'btn btn-primary ', 'accesskey'=>'s', 'content'=>'Save', 'id'=>'save' )); 
+						echo form_button (array ('name'=>'save_new', 'value'=>'save_new', 'type'=>'submit', 'class'=>'btn btn-secondary mr-1', 'accesskey'=>'n', 'content'=>'Save As New', 'id'=>'save_new' )); 
+					?>
+					<?php if ($question_id > 0) { ?>
+						<a href="javascript:void(0)" onclick="show_confirm ('Delete this question?', '<?php echo site_url ('coaching/tests_actions/remove_question/'.$coaching_id.'/'.$course_id.'/'.$test_id.'/'.$parent_id.'/'.$question_id); ?>')" class="btn btn-danger">Delete</a>
+						<input type="hidden" name="question_type" value="<?php echo $result['type']; ?>">
+					<?php } ?>
+					<input type="hidden" name="negmarks" value="<?php echo $question_group['negmarks']; ?>">
+					<input type="hidden" name="time" value="<?php echo $question_group['time']; ?>">
+					<input type="hidden" name="language" value="0">
+					<input type="hidden" name="category" value="0">
+					<input type="hidden" name="save_type" id="save_type" value="save" > 
+				</div>
+			<?php echo form_close (); ?> 
+		</div> <!-- /.widget .box -->
+    </div>
+</div>
