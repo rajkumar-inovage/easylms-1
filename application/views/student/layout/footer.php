@@ -13,16 +13,13 @@
                     <div class="col-12 col-sm-6">
                         <p class="mb-0 text-muted"><a href="https://easycoachingapp.com" target="_blank"><?php echo BRANDING_TEXT; ?></a></p>
                     </div>
-                    <div class="col-sm-6 d-none">
-                        <ul class="breadcrumb pt-0 pr-0 float-right">
-                            <li class="breadcrumb-item mb-0">
-                                <a href="#" class="btn-link">Review</a>
-                            </li>
-                            <li class="breadcrumb-item mb-0">
-                                <a href="#" class="btn-link">Purchase</a>
-                            </li>
-                            <li class="breadcrumb-item mb-0">
-                                <a href="#" class="btn-link">Docs</a>
+                    <div class="col-sm-6 ">
+                        <ul class="breadcrumb pt-0 pr-0 float-right">                            
+                            <li class="breadcrum  mb-0" id="installBanner" style="visibility: hidden;">
+                                <a href="javascript:void(0);" id="installBtn">
+                                    <i class="fab fa-android text-success"></i>
+                                    <span>Install App</span>
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -31,29 +28,7 @@
         </div>
     </footer>
 
-	<footer class="fixed-bottom mt-0 d-none">
-		<nav class="bg-white border-top">
-            <ul class="nav nav-tabs nav-justified ">
-                <?php 
-                $role_id = $this->session->userdata ('role_id');
-                $footer_menu = $this->common_model->load_acl_menus ($role_id, 0, MENUTYPE_FOOTER);
-                if (! empty ($footer_menu)) {
-                    foreach ($footer_menu as $menu) {
-                        $link = $menu['controller_path'].'/'.$menu['controller_nm'].'/'.$menu['action_nm'].'/'.$coaching_id.'/'.$member_id;
-                        ?>
-                        <li class="nav-item ">
-                            <a class="nav-link px-0 border-top-0 rounded-0<?php echo ($this->router->fetch_class() == $menu['controller_nm'])?' active':'';?>" href="<?php echo site_url ($link); ?>">
-                                <div class="<?php echo ($this->router->fetch_class() == $menu['controller_nm'])?'text-blue-400':'text-grey-600';?>"><?php echo $menu['icon_img']; ?></div>
-                                <div class="<?php echo ($this->router->fetch_class() == $menu['controller_nm'])?'text-blue-400':'text-grey-600';?>"><?php echo $menu['menu_desc']; ?></div>
-                            </a>
-                        </li>
-                        <?php
-                    }
-                }
-                ?>
-            </ul>
-        </nav>
-	</footer>
+	
     <script src="<?php echo base_url(THEME_PATH . 'assets/js/vendor/jquery-3.3.1.min.js'); ?>"></script>
     <script src="<?php echo base_url(THEME_PATH . 'assets/js/vendor/bootstrap.bundle.min.js'); ?>"></script>
     <script src="<?php echo base_url(THEME_PATH . 'assets/js/vendor/Chart.bundle.min.js'); ?>"></script>

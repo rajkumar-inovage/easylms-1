@@ -16,14 +16,11 @@
                     </div>
                     <div class="col-sm-6 d-none">
                         <ul class="breadcrumb pt-0 pr-0 float-right">
-                            <li class="breadcrumb-item mb-0">
-                                <a href="#" class="btn-link">Review</a>
-                            </li>
-                            <li class="breadcrumb-item mb-0">
-                                <a href="#" class="btn-link">Purchase</a>
-                            </li>
-                            <li class="breadcrumb-item mb-0">
-                                <a href="#" class="btn-link">Docs</a>
+                            <li class="breadcrum  mb-0" id="installBanner" style="visibility: hidden;">
+                                <a href="javascript:void(0);" id="installBtn">
+                                    <i class="fab fa-android text-success"></i>
+                                    <span>Install App</span>
+                                </a>
                             </li>
                         </ul>
                     </div>

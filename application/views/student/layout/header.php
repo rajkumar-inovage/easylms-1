@@ -279,15 +279,7 @@
                             <?php
                         }
                     }
-                    ?>
-                    <!-- 
-                    <li class="" id="installBanner" style="visibility: hidden;">
-                        <a href="javascript:void(0);" id="installBtn">
-                            <i class="fab fa-android text-success"></i>
-                            <span>Install App</span>
-                        </a>
-                    </li>
-                    -->
+                    ?>                   
                 </ul>
             </div>
         </div>                

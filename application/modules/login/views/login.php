@@ -50,7 +50,7 @@
             </div>
         </div>
 
-        <div class="mt-4 text-center text-danger">
+        <div class="mt-4 text-center ">
             <?php if (isset($coaching['custom_text_login'])) { echo $coaching['custom_text_login']; } ?>
         </div>
     </div>

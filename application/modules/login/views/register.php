@@ -68,16 +68,19 @@
 
                     <div class="my-2">
                         <?php 
-                            if (isset($coaching['eula_text'])) {
-                                $href = site_url ('public/page/eula');
-                                ?>
-                                <label>
-                                    <input type="checkbox" name="agree"> 
-                                    I agree to the <a href="<?php echo $href; ?>" target="">Terms And Conditions </a>
-                                </label>
-                                <?php
-                            }
+                        if (isset($coaching['eula_text'])) {
+                            $href = site_url ('public/page/eula');
+                            ?>
+                            <?php
+                        } else {
+                            $href = '#';
+                        }
                         ?>
+                        <label>
+                            <input type="checkbox" name="agree"> 
+                            I agree to the <a href="<?php echo $href; ?>" target="">Terms And Conditions </a>
+                        </label>
+
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
@@ -87,7 +90,7 @@
                 <?php echo form_close(); ?>
             </div>
         </div>
-        <div class="mt-4 text-center text-danger">
+        <div class="mt-4 text-center ">
             <?php if (isset($coaching['custom_text_register'])) { echo $coaching['custom_text_register']; } ?>
         </div>
     </div>
