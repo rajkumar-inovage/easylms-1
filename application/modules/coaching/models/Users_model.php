@@ -213,7 +213,7 @@ class Users_model extends CI_Model {
 		}
 		if($member_id == $this->session->userdata('member_id')){
 			$this->session->set_userdata (array (
-				'user_name'		=> "$first_name $last_name",
+				'user_name'		=> "$f_name $l_name",
 				)
 			);
 		}

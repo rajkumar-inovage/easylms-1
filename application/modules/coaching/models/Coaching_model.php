@@ -172,7 +172,7 @@ class Coaching_model extends CI_Model {
 	public function get_coaching_by_slug ($coaching_slug='') {
 		$this->db->select ('CS.custom_text_login, CS.custom_text_register, CS.eula_text, C.*');
 		$this->db->from ('coachings C');
-		$this->db->join ('coaching_settings CS', 'C.id=CS.coaching_id');
+		$this->db->join ('coaching_settings CS', 'C.id=CS.coaching_id', 'left');
 		$this->db->where ('C.coaching_url', $coaching_slug);
 		$this->db->or_where ('C.reg_no', $coaching_slug);
 		$sql = $this->db->get ();
