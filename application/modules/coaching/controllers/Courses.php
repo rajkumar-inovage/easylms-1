@@ -141,7 +141,11 @@ class Courses extends MX_Controller {
 	public function manage ($coaching_id=0, $course_id=0) {
 		$data['page_title'] = 'Manage Course';
 
-		$data['course'] = $this->courses_model->get_course_by_id ($course_id);
+		$data['course'] = $course = $this->courses_model->get_course_by_id ($course_id);
+		if (! $course) {
+			$this->message->set ('Course not found', 'danger', true);
+			redirect ('coaching/courses/index/'.$coaching_id);			
+		}
 		$data['num_lessons'] = $this->courses_model->count_course_lessons ($coaching_id, $course_id);
 		$data['num_tests'] = $this->courses_model->count_course_tests ($coaching_id, $course_id); 
 		$data['teachers'] = $this->courses_model->get_teachers_assigned ($coaching_id, $course_id);

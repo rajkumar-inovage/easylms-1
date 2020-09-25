@@ -573,5 +573,149 @@ class Courses_model extends CI_Model {
 	public function duplicate_course ($coaching_id=0, $course_id=0) {
 		// Get course
 		$course = $this->get_course_by_id ($course_id);
+
+		//--> Copy course data
+		$c_data = $course;
+		$c_data['course_id'] = NULL;
+		$c_data['title'] = $course['title'] . ' - Duplicate';
+		$c_data['status'] = 0;
+		$c_data['created_on'] = time ();
+		$c_data['created_by'] = $this->session->userdata ('member_id');
+		$this->db->insert ('coaching_courses', $c_data);
+		$new_course_id = $this->db->insert_id ();
+
+		// 1. COPY LESSONS
+		// Get all lessons in this course
+		$this->db->where ('coaching_id', $coaching_id);
+		$this->db->where ('course_id', $course_id);
+		$sql = $this->db->get ('coaching_course_lessons');
+		if ($sql->num_rows () > 0) {
+			$lessons = $sql->result_array ();
+			foreach ($lessons as $lesson) {
+				//--> Insert Lessons -------------------
+				$c_data = $lesson;
+				$c_data['lesson_id'] = NULL;
+				$c_data['course_id'] = $new_course_id;
+				$c_data['created_on'] = time ();
+				$c_data['created_by'] = $this->session->userdata ('member_id');
+				$this->db->insert ('coaching_course_lessons', $c_data);
+				$new_lesson_id = $this->db->insert_id();
+
+				$ref_id = $this->lessons_model->generate_reference_id ($coaching_id, $new_course_id, $new_lesson_id);
+				$this->db->set ('lesson_key', $ref_id);
+				$this->db->where ('coaching_id', $coaching_id);
+				$this->db->where ('course_id', $new_course_id);
+				$this->db->where ('lesson_id', $new_lesson_id);
+				$this->db->update ('coaching_course_lessons');
+				//--> Insert Lessons ---------------------
+
+				// Get all pages in this lesson
+				$this->db->where ('coaching_id', $coaching_id);
+				$this->db->where ('course_id', $course_id);
+				$this->db->where ('lesson_id', $lesson['lesson_id']);
+				$l_sql = $this->db->get ('coaching_course_lesson_pages');
+				if ($l_sql->num_rows () > 0) {
+					$pages = $l_sql->result_array ();
+					foreach ($pages as $page) {
+						//--> Insert Page -----------------------------
+						$c_data = $page;
+						$c_data['page_id'] = NULL;
+						$c_data['course_id'] = $new_course_id;
+						$c_data['lesson_id'] = $new_lesson_id;
+						$c_data['created_on'] = time ();
+						$c_data['created_by'] = $this->session->userdata ('member_id');
+						$this->db->insert ('coaching_course_lesson_pages', $c_data);
+						$new_page_id = $this->db->insert_id ();
+						//--> Insert Page -----------------------------
+
+						// Get all attachments in this page
+						$this->db->where ('coaching_id', $coaching_id);
+						$this->db->where ('course_id', $course_id);
+						$this->db->where ('lesson_id', $lesson['lesson_id']);
+						$this->db->where ('page_id', $page['page_id']);
+						$a_sql = $this->db->get ('coaching_course_lesson_attachments');
+						if ($a_sql->num_rows () > 0) {
+							$att = $a_sql->result_array ();
+							foreach ($att as $at) {
+								//--> Insert Attachment -----------------------------
+								$c_data = $at;
+								$c_data['att_id'] = NULL;
+								$c_data['course_id'] = $new_course_id;
+								$c_data['lesson_id'] = $new_lesson_id;
+								$c_data['page_id'] = $new_page_id;
+								$c_data['created_on'] = time ();
+								$c_data['created_by'] = $this->session->userdata ('member_id');
+								$this->db->insert ('coaching_course_lesson_attachments', $c_data);
+								//--> Insert Page -----------------------------
+
+							}
+						}
+
+
+					}
+				}
+
+
+			}
+		}
+
+		// 2. COPY TESTS
+		// Get all tests in this course
+		$this->db->where ('coaching_id', $coaching_id);
+		$this->db->where ('course_id', $course_id);
+		$sql = $this->db->get ('coaching_tests');
+		if ($sql->num_rows () > 0) {
+			$tests = $sql->result_array ();
+			foreach ($tests as $test) {
+				//--> Insert Tests ---------------------
+				$c_data = $test;
+				$c_data['test_id'] = NULL;
+				$c_data['course_id'] = $new_course_id;
+				$c_data['created_by'] = $this->session->userdata ('member_id');
+				$c_data['creation_date'] = time ();
+				$this->db->insert ('coaching_tests', $c_data);
+				$new_test_id = $this->db->insert_id ();
+
+				$ref_id = $this->tests_model->generate_reference_id ($coaching_id, $new_course_id, $new_test_id);
+				$this->db->set ('unique_test_id', $ref_id);
+				$this->db->where ('coaching_id', $coaching_id);
+				$this->db->where ('course_id', $new_course_id);
+				$this->db->where ('test_id', $new_test_id);
+				$this->db->update ('coaching_tests');
+				//--> Insert Tests ---------------------
+
+				// Get test questions
+				$this->db->select ('CQ.*');
+				$this->db->from ('coaching_test_questions TQ');
+				$this->db->join ('coaching_questions CQ', 'TQ.question_id=CQ.question_id');
+				$this->db->where ('TQ.coaching_id', $coaching_id);
+				$this->db->where ('TQ.test_id', $test['test_id']);
+				$sql_q = $this->db->get ();
+				if ($sql_q->num_rows () > 0) {
+					$questions = $sql_q->result_array ();
+					foreach ($questions as $q) {
+						//--> Insert question
+						$c_data = $q;
+						$c_data['question_id'] = NULL;
+						$c_data['creation_date'] = time ();
+						$c_data['created_by'] = $this->session->userdata ('member_id');
+						$this->db->insert ('coaching_questions', $c_data);
+						$new_question_id = $this->db->insert_id ();
+						//--> Insert question
+
+						// Add to test
+						$a_data = [];
+						$a_data['coaching_id'] = $coaching_id;
+						$a_data['test_id'] = $new_test_id;
+						$a_data['question_id'] = $new_question_id;
+						$this->db->insert ('coaching_test_questions', $a_data);
+					}
+				}
+			}
+		}
+
+
+		return $new_course_id;
+
 	}
 }

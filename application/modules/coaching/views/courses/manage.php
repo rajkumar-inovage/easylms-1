@@ -171,6 +171,35 @@
 		                </a>
 		            <?php } ?>
 		            <?php if ($is_admin == true) { ?>
+						
+						<!------ DUPLICATE COURSE ------------>
+		            	<a href="#" class="list-item-heading mb-0 truncate w-100 mt-0 d-inline-block" data-toggle="modal" data-target=".duplicate-modal-sm">
+							<i class="iconsminds-duplicate-layer heading-icon"></i>
+		            		<span class="align-middle d-inline-block">Duplicate Course</span>
+		            	</a>
+		            	<div class="modal fade duplicate-modal-sm" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+		            		<div class="modal-dialog modal-sm">
+		            			<?php echo form_open ('coaching/courses_actions/duplicate_course/'.$coaching_id.'/'.$course_id, ['class'=>'validate-form']); ?>
+			            			<div class="modal-content">
+			            				<div class="modal-body ">
+			            					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			            						<span aria-hidden="true">×</span>
+			            					</button>
+			            					<h5 class="modal-title">New course name</h5>
+			            					<input type="text" name="new_title" class="form-control" value="<?php echo $course['title'] . ' - Duplicate'; ?>">
+			            					<hr>
+			            					<label>
+				            					<input type="checkbox" name="switch_to_course" value="1"> Switch to new course
+				            				</label>
+			            					<button type="submt" class="btn btn-primary ml-3" >Submit</button>
+			            				</div>
+			            			</div>
+			            		</form>
+		            		</div>
+		            	</div>
+						<!------ DELETE COURSE ------------>
+
+						<!------ DELETE COURSE ------------>
 		            	<a href="#" class="list-item-heading mb-0 truncate w-100 mt-0 d-inline-block" data-toggle="modal" data-target=".bd-example-modal-sm"><i class="simple-icon-trash heading-icon"></i> Delete</a>
 		            	<div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
 		            		<div class="modal-dialog modal-sm">
@@ -190,6 +219,7 @@
 		            			</div>
 		            		</div>
 		            	</div>
+						<!------ DELETE COURSE ------------>
 		            <?php } ?>
 		        </div>
 		    </div>

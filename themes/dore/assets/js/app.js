@@ -194,7 +194,7 @@ if (submitFormSelector) {
 			toastr.clear ();
 			if (result.status == true) {
 				toastr.success (result.message, '', {timeOut:1000});
-				if (result.redirect!==undefined) {
+				if (result.redirect != '') {
 					document.location = result.redirect;
 				}
 			} else {
@@ -215,6 +215,7 @@ for (i = 0; i < submitFormSelectors.length; i++) {
 			e.preventDefault ();
 			const formURL = submitFormSelector.getAttribute ('action');
 			var formData = new FormData(submitFormSelector);
+			toastr.clear ();
 			toastr.info ('Please wait...');
 			fetch (formURL, { 
 				method : 'POST',
@@ -245,6 +246,7 @@ if (uploadFormSelector) {
 		e.preventDefault ();
 		const formURL = uploadFormSelector.getAttribute ('action');
 		var formData = new FormData(uploadFormSelector);
+		toastr.clear ();
 		toastr.info ('Please wait...');
 		fetch (formURL, { 
 			method : 'POST',
@@ -252,7 +254,7 @@ if (uploadFormSelector) {
 		}).then (function (response) {
 			return response.json ();
 		}).then(function(result) {
-			console.log (result);
+			toastr.clear ();
 			if (result.status == true) {
 				toastr.success (result.message);
 				document.location = result.redirect;

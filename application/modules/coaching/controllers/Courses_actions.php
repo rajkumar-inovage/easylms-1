@@ -240,6 +240,20 @@ class Courses_actions extends MX_Controller {
  	}
 
  	public function duplicate_course ($coaching_id=0, $course_id=0) {
- 		$this->courses_model->duplicate_course ($coaching_id, $course_id);
+		$this->form_validation->set_rules('new_title', 'New Title', 'required');
+		if ($this->form_validation->run() == true) {
+			$new_course_id = $this->courses_model->duplicate_course ($coaching_id, $course_id);
+			$message = 'Course copied successfully';
+			if ($this->input->post ('switch_to_course')) {
+				$redirect = site_url ("coaching/courses/manage/$coaching_id/$new_course_id");
+			} else {
+				$redirect = "";
+			}
+			$this->output->set_content_type("application/json");
+			$this->output->set_output(json_encode(array('status'=>true, 'message'=>$message, 'redirect'=>$redirect)));
+		} else {
+			$this->output->set_content_type("application/json");
+			$this->output->set_output(json_encode(array('status' => false, 'error' => validation_errors())));
+		}
  	}
 }
