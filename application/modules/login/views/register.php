@@ -1,6 +1,6 @@
 <div class="row h-100">
     <div class="col-12 col-md-10 mx-auto my-auto">
-        <div class="card auth-card shadow">
+        <div class="card auth-card shadow mt-4">
             <div class="position-relative image-side text-center">
             	<div class="d-flex flex-column h-100 align-items-center justify-content-center">
 	                 <?php if ( is_file ($logo)) { ?>
@@ -25,35 +25,42 @@
                 	<input type="hidden" name="sr_no" value="">
                 	<input type="hidden" name="second_name" value="">
                 	<input type="hidden" name="user_batch" value="0">
-                	<div class="d-lg-flex">
-                		<div class="flex-grow-1 pr-lg-1">
-		                    <label class="form-group has-float-label mb-4">
-		                    	<input type="text" name="first_name" class="form-control required"  value="<?php echo set_value ('first_name'); ?>" placeholder="Enter Your Name" />
-		                        <span>Your Name<span class="text-danger">*</span></span>
-		                    </label>
-                		</div>
-                		<div class="flex-grow-1 pl-lg-1">
-		                    <label class="form-group has-float-label mb-4">
-		                    	<input type="text" name="primary_contact" class="form-control digits required" value="<?php echo set_value ('primary_contact'); ?>" placeholder="Enter Your Mobile Number" />
-		                        <span>Mobile<span class="text-danger">*</span></span>
-		                    </label>
-                		</div>
-                	</div>
-                    <label class="form-group has-float-label mb-4">
-                    	<input type="text" name="email" class="form-control email required" value="<?php echo set_value ('email'); ?>" placeholder="Enter Your Email" />
-                        <span>Email (Optional)</span>
-                    </label>
 
-                    <label class="form-group has-float-label mb-4">
+                    <div class="form-group mb-4">
+                        <label class="">
+                            <span>Name<span class="text-danger">*</span></span>
+                        </label>
+                    	<input type="text" name="first_name" class="form-control required"  value="<?php echo set_value ('first_name'); ?>" placeholder="Enter Your Name" />
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label class="">
+                            <span>Mobile<span class="text-danger">*</span></span>
+                        </label>
+                    	<input type="text" name="primary_contact" class="form-control digits required" value="<?php echo set_value ('primary_contact'); ?>" placeholder="Enter Your Mobile Number" />
+                    </div>
+                    
+
+                    <div class="form-group mb-4">
+                        <label class="">
+                            <span>Email (Optional)</span>
+                        </label>
+                       	<input type="text" name="email" class="form-control email required" value="<?php echo set_value ('email'); ?>" placeholder="Enter Your Email" />
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label class="">
+                            <span>Password</span>
+                        </label>
                     	<div class="input-group">
 						  	<input type="password" name="password" id="reg-password" class="form-control required" placeholder="Password"  aria-label="Password" aria-describedby="show-password" />
 						  	<div class="input-group-append">
 						  		<button class="btn btn-outline-secondary default" type="button" id="show-password"><i id="password-icon" class="fa fa-eye d-lg-none"></i><span class="d-none d-lg-inline-block" id="show-password-link">Show Password</span></button>
 						  	</div>
 						</div>
-                        <span>Password</span>
-						<p class="text-muted">Minimum 8 characters. Choosing a strong password is recommended</p>
-                    </label>
+    					<p class="text-muted">Minimum 8 characters. Choosing a strong password is recommended</p>
+                    </div>
+
                     <?php if ($access_code != '' && $found == true) { ?>
                         <label class="form-group has-float-label mb-4">
                           <input class="form-control" placeholder="Access Code" type="hidden" name="access_code" value="<?php echo $access_code; ?>" readonly>

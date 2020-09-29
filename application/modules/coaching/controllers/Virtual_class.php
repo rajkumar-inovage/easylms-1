@@ -289,11 +289,13 @@ class Virtual_class extends MX_Controller {
 
 			if ( $is_running == 'true') {
 				// if class has already started, join class
+				$this->virtual_class_model->add_member_log ($coaching_id, $class_id, $member_id);
 				redirect ($join_url);
 			} else {
 				// if class has not started, create class and join (if moderator of class)
 				$response = $this->virtual_class_model->create_meeting ($coaching_id, $class_id);
 				if ($response == 'SUCCESS') {
+					$this->virtual_class_model->add_member_log ($coaching_id, $class_id, $member_id);
 					redirect ($join_url);
 				} else {
 					$error = $error_code[1];
@@ -316,11 +318,38 @@ class Virtual_class extends MX_Controller {
 	}
 
 	public function end_meeting ($coaching_id=0, $class_id=0, $course_id=0, $batch_id=0) {
-		$this->virtual_class_model->add_to_history ($coaching_id, $class_id);
+
+		$member_id = $this->session->userdata ('member_id');
+
+		$this->virtual_class_model->update_member_log ($coaching_id, $member_id);
+		$this->virtual_class_model->update_meeting_log ($coaching_id);
+		
 		if ($this->session->userdata ('role_id') == USER_ROLE_STUDENT) {
 			redirect ('student/virtual_class/index/'.$coaching_id.'/'.$course_id.'/'.$batch_id);
 		} else {
 			redirect ('coaching/virtual_class/index/'.$coaching_id.'/'.$course_id.'/'.$batch_id);
 		}
+	}
+
+
+	public function meeting_logs ($coaching_id=0, $class_id=0, $course_id=0, $batch_id=0) {
+		$data['coaching_id'] = $coaching_id;
+		$data['class_id'] = $class_id;
+		$data['course_id'] = $course_id;
+		$data['batch_id'] = $batch_id;
+		$data['page_title'] = 'Meeting Logs';
+
+		$data['bc'] = array('Virtual Classroom'=>'coaching/virtual_class/index/'.$coaching_id.'/'.$course_id.'/'.$batch_id);
+
+		//$data['info'] = $this->virtual_class_model->get_meeting_info ($coaching_id, $class_id);
+		$data['history'] = $this->virtual_class_model->get_meeting_logs ($coaching_id, $class_id, $course_id);
+		
+		$this->load->view(INCLUDE_PATH . 'header', $data);
+		$this->load->view('virtual_class/meeting_logs', $data);
+		$this->load->view(INCLUDE_PATH . 'footer', $data);
+	}
+	
+	public function get_participant_logs ($coaching_id=0, $class_id=0, $member_id=0, $course_id=0, $batch_id=0) {
+
 	}
 }

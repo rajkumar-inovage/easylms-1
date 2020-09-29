@@ -378,7 +378,7 @@ $config['encryption_key'] = 'akb8vuhx';
 |
 */
 $config['sess_driver'] = 'files';
-$config['sess_cookie_name'] = 'easy_coaching_app';
+$config['sess_cookie_name'] = 'easy_coaching_lms';
 $config['sess_expiration'] = 0;
 $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;

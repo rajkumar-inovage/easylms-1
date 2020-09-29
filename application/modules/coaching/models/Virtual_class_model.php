@@ -149,7 +149,6 @@ class Virtual_class_model extends CI_Model {
 
 		$logoutURL = VC_LOGOUT_URL.'/'.$coaching_id.'/'.$class_id.'/'.$course_id.'/'.$batch_id;
 
-
 		// 2. Restrictions
 		$wait_for_moderator = 'true';
 		
@@ -281,7 +280,6 @@ class Virtual_class_model extends CI_Model {
 		$data['call_name'] 			= $call_name;
 		$data['query_string'] 		= $query_string;
 		$data['checksum'] 			= $checksum;
-
 
 		if ($class_id > 0) {
 			$this->db->where ('class_id', $class_id);
@@ -600,6 +598,28 @@ class Virtual_class_model extends CI_Model {
 
 	}
 
+	public function my_classroom ($coaching_id=0, $member_id=0, $category_id='-1') {
+		$result = [];
+		$this->db->select ('VC.*, VCP.meeting_url, VCP.role');
+		$this->db->from ('virtual_classroom VC');
+		$this->db->join ('virtual_classroom_participants VCP', 'VC.class_id=VCP.class_id');
+		$this->db->where ('VCP.coaching_id', $coaching_id);
+		$this->db->where ('VCP.member_id', $member_id);
+		if ($category_id > '-1') {
+			$this->db->where ('VC.category_id', $category_id);
+		}
+		$sql = $this->db->get ();
+		$sql_array = $sql->result_array ();
+		if (! empty ($sql_array)) {
+			foreach ($sql_array as $row) {
+				$row['running'] = $this->is_meeting_running ($coaching_id, $row['class_id']);
+				$result[] = $row;
+			}			
+		}
+		return $result;
+	}
+
+
 	public function is_meeting_running ($coaching_id=0, $class_id=0) {
 
 		$api_setting = $this->virtual_class_model->get_api_settings ();
@@ -620,10 +640,34 @@ class Virtual_class_model extends CI_Model {
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		$xml_response = curl_exec($ch);
 		curl_close($ch);
-		$xml = simplexml_load_string($xml_response);
+		$xml = simplexml_load_string ($xml_response);
 		$running = $xml->running;
 
 		return $running;
+	}
+
+	public function get_meeting_info ($coaching_id=0, $class_id=0) {
+
+		$api_setting = $this->virtual_class_model->get_api_settings ();
+		$class = $this->virtual_class_model->get_class ($coaching_id, $class_id);
+		
+		$api_url = $api_setting['api_url'];
+		$shared_secret = $api_setting['shared_secret'];
+		$call_name = 'getMeetingInfo';
+		$query_string = 'meetingID='.$class['meeting_id'];
+
+		$checksum_string = $call_name . $query_string . $shared_secret;
+		$checksum = sha1 ($checksum_string);
+		$url = $api_url . $call_name . '?'. $query_string . '&checksum='.$checksum;
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		$xml_response = curl_exec($ch);
+		curl_close($ch);
+		$xml = simplexml_load_string ($xml_response);
+		return $xml;
 	}
 
 	public function create_meeting ($coaching_id=0, $class_id=0) {
@@ -636,7 +680,7 @@ class Virtual_class_model extends CI_Model {
 		$call_name = $class['call_name'];
 		$query_string = $class['query_string'];
 		$checksum = $class['checksum'];
-
+		
 		$final_string = $api_url . $call_name .'?'.  $query_string . '&checksum='.$checksum;
 		
 		// Upload whiteboard slide
@@ -663,52 +707,101 @@ class Virtual_class_model extends CI_Model {
 		$returncode = $xml->returncode;
 		if ($returncode == 'SUCCESS') {
 			$member_id = $this->session->userdata ('member_id');
-			$this->add_to_history ($coaching_id, $class_id, $member_id);
+			$this->add_meeting_log ($coaching_id, $class_id, $member_id);
 		}
 		return $returncode;
 	}
 
-	public function add_to_history ($coaching_id=0, $class_id=0, $member_id=0) {
-		$data['coaching_id'] = $coaching_id;
-		$data['class_id'] = $class_id;
-		$data['start_date'] = time ();
-		$data['end_date'] = 0;
-		$data['created_by'] = $member_id;
+	public function add_meeting_log ($coaching_id=0, $class_id=0, $member_id=0) {
+
+		$meeting = $this->get_meeting_info ($coaching_id, $class_id);
+		$internal_id = $meeting->internalMeetingID;
+		$cookie_limit = 24 * 60 * 60;
+		// Cookie path
+		$base_url = base_url ();
+		$parse = parse_url ($base_url);
+		$path = $parse['path'];
+
 		$this->db->where ('coaching_id', $coaching_id);
 		$this->db->where ('class_id', $class_id);
-		$this->db->where ('start_date >', 0);
-		$this->db->where ('end_date', 0);
-		$sql = $this->db->get ('virtual_classroom_history');
+		$this->db->where ('internal_id', $internal_id);
+		$sql = $this->db->get ('virtual_classroom_mlogs');
 		if ($sql->num_rows () == 0) {
-			$this->db->insert ('virtual_classroom_history', $data);
-		} else {
-			$this->db->set ('end_date', time ());
-			$this->db->where ('coaching_id', $coaching_id);
-			$this->db->where ('class_id', $class_id);
-			$this->db->update ('virtual_classroom_history');
+			setcookie('internalMeetingID', $internal_id, time () + $cookie_limit, $path);
+			$data['coaching_id'] = $coaching_id;
+			$data['class_id'] = $class_id;
+			$data['internal_id'] = $internal_id;
+			$data['start_date'] = time ();
+			$data['end_date'] = 0;
+			$data['created_by'] = $member_id;
+			$this->db->insert ('virtual_classroom_mlogs', $data);
 		}
 	}
 
+	public function update_meeting_log ($coaching_id=0, $class_id=0, $member_id=0) {
 
-	public function my_classroom ($coaching_id=0, $member_id=0, $category_id='-1') {
-		$result = [];
-		$this->db->select ('VC.*, VCP.meeting_url, VCP.role');
-		$this->db->from ('virtual_classroom VC');
-		$this->db->join ('virtual_classroom_participants VCP', 'VC.class_id=VCP.class_id');
-		$this->db->where ('VCP.coaching_id', $coaching_id);
-		$this->db->where ('VCP.member_id', $member_id);
-		if ($category_id > '-1') {
-			$this->db->where ('VC.category_id', $category_id);
+		$internal_id = $_COOKIE['internalMeetingID'];
+		$this->db->set ('end_date', time ());
+		$this->db->where ('coaching_id', $coaching_id);
+		$this->db->where ('internal_id', $internal_id);
+		$this->db->update ('virtual_classroom_mlogs');
+	}
+
+	public function add_member_log ($coaching_id=0, $class_id=0, $member_id=0) {
+
+		$meeting 	= $this->get_meeting_info ($coaching_id, $class_id);
+		$internal_id = $meeting->internalMeetingID;
+		$cookie_limit = 24 * 60 * 60;
+		// Cookie path
+		$base_url = base_url ();
+		$parse = parse_url ($base_url);
+		$path = $parse['path'];
+
+		$this->db->where ('coaching_id', $coaching_id);
+		$this->db->where ('class_id', $class_id);
+		$this->db->where ('member_id', $member_id);
+		$this->db->where ('internal_id', $internal_id);
+		$sql = $this->db->get ('virtual_classroom_plogs');
+		if ($sql->num_rows () == 0) {		
+			setcookie('internalMeetingID', $internal_id, time () + $cookie_limit, $path);
+			$data['coaching_id'] = $coaching_id;
+			$data['class_id'] = $class_id;
+			$data['member_id'] = $member_id;
+			$data['internal_id'] = $internal_id;
+			$data['start_time'] = time ();
+			$data['end_time'] = 0;
+			$this->db->insert ('virtual_classroom_plogs', $data);
 		}
-		$sql = $this->db->get ();
-		$sql_array = $sql->result_array ();
-		if (! empty ($sql_array)) {
-			foreach ($sql_array as $row) {
-				$row['running'] = $this->is_meeting_running ($coaching_id, $row['class_id']);
-				$result[] = $row;
-			}			
+	}
+	
+	public function update_member_log ($coaching_id=0, $member_id=0) {
+
+		$internal_id = $_COOKIE['internalMeetingID'];
+		$this->db->set ('end_time', time ());
+		$this->db->where ('coaching_id', $coaching_id);
+		$this->db->where ('member_id', $member_id);
+		$this->db->where ('internal_id', $internal_id);
+		$this->db->update ('virtual_classroom_plogs');
+	}
+
+	public function get_meeting_logs ($coaching_id=0, $class_id=0, $created_by=0) {
+		$this->db->where ('coaching_id', $coaching_id);
+		$this->db->where ('class_id', $class_id);
+		if ($created_by > 0) {
+			$this->db->where ('created_by', $created_by);
 		}
-		return $result;
+		$sql = $this->db->get ('virtual_classroom_mlogs');
+		return $sql->result_array ();
+	}
+
+	public function get_member_logs ($coaching_id=0, $created_by=0, $class_id=0) {
+		$this->db->where ('coaching_id', $coaching_id);
+		$this->db->where ('created_by', $created_by);
+		if ($class_id > 0) {
+			$this->db->where ('class_id', $class_id);
+		}
+		$sql = $this->db->get ('virtual_classroom_mlogs');
+		return $sql->result_array ();
 	}
 
 	public function get_running_meetings ($coaching_id=0) {

@@ -6,7 +6,8 @@ $config['vc'] = '';
 define ('VM_PARTICIPANT_ATTENDEE', 				1);
 define ('VM_PARTICIPANT_MODERATOR', 			2);
 
-define ('VC_LOGOUT_URL', 					site_url('coaching/virtual_class/end_meeting'));
+define ('VC_LOGOUT_URL', 					site_url('coaching/virtual_class/end_meeting') );
+define ('VC_END_CALLBACK_URL', 				site_url('coaching/virtual_class/end_callback') );
 define ('VC_BANNER_TEXT', 					'WERT');
 define ('VC_BANNER_COLOR', 					'#f5f5f5');
 define ('VC_LOGO', 							'');
