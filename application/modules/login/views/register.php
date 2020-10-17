@@ -61,7 +61,7 @@
     					<p class="text-muted">Minimum 8 characters. Choosing a strong password is recommended</p>
                     </div>
 
-                    <?php /* if ($access_code != '' && $found == true) { ?>
+                    <?php if ($access_code != '' && $found == true) { ?>
                         <label class="form-group has-float-label mb-4">
                           <input class="form-control" placeholder="Access Code" type="hidden" name="access_code" value="<?php echo $access_code; ?>" readonly>
                         </label>
@@ -71,16 +71,8 @@
                             <span>Access Code</span>
                             <p class="text-muted">If you don't have access code, contact your coaching-center/institution</p>
                         </label>
-                    <?php } */ ?>
-
-                    <div class="form-group mb-4">
-                        <label class="">
-                            Access Code<span class="text-danger">*</span>
-                        </label>
-                        <input class="form-control" placeholder="Access Code" type="text" name="access_code" value="<?php echo set_value ('access_code'); ?>" >
-                        <p class="text-muted">If you don't have access code, contact your coaching-center/institution</p>
-                    </div>
-
+                    <?php } ?>
+                    
                     <div class="my-2">
                         <?php 
                         if (isset($coaching['eula_text'])) {

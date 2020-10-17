@@ -30,13 +30,17 @@
                         <input name="mobile" class="form-control required" placeholder="Enter Your Registered Mobile No" autofocus="autofocus" id="mobile" />
                     </div>
 
-                    <div class="form-group mb-4">
-                        <label class="">
-                            Access Code<span class="text-danger">*</span>
+                    <?php if ($access_code != '' && $found == true) { ?>
+                        <label class="form-group has-float-label mb-4">
+                          <input class="form-control" placeholder="Access Code" type="hidden" name="access_code" value="<?php echo $access_code; ?>" readonly>
                         </label>
-                        <input class="form-control" placeholder="Access Code" type="text" name="access_code" value="<?php echo set_value ('access_code'); ?>" >
-                        <p class="text-muted">If you don't have access code, contact your coaching-center/institution</p>
-                    </div>
+                    <?php } else { ?>
+                        <label class="form-group has-float-label mb-4">
+                            <input class="form-control" placeholder="Access Code" type="text" name="access_code" value="<?php echo $access_code; ?>" >
+                            <span>Access Code</span>
+                            <p class="text-muted">If you don't have access code, contact your coaching-center/institution</p>
+                        </label>
+                    <?php } ?>
 
 
                     <div class="d-flex justify-content-between align-items-center">
