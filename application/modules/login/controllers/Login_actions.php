@@ -144,7 +144,7 @@ class Login_actions extends MX_Controller {
 					$message = 'Your account has been created. You can log-in to your account';
 					
 					// Send SMS to user
-					$data['name'] = $user['first_name'];
+					$data['name'] = $user_name;
 					$data['coaching_name'] = $coaching['coaching_name'];
 					$data['access_code'] = $coaching['reg_no'];
 					$data['url'] = site_url ('login/login/index/?sub='.$data['access_code']);
