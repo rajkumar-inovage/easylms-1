@@ -199,7 +199,7 @@ if (submitFormSelector) {
 				}
 			} else {
 				var message = result.error.replace('/[\n\r]/g', '');
-				toastr.error (message);
+				toastr.error (message, '', {timeOut:2000});
 			}
 		});
 	});
@@ -232,7 +232,7 @@ for (i = 0; i < submitFormSelectors.length; i++) {
 					}
 				} else {
 					var message = result.error.replace('/[\n\r]/g', '');
-					toastr.error (message);
+					toastr.error (message, '', {timeOut:2000});
 				}
 			});
 		});
