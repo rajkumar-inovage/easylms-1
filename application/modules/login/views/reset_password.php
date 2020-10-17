@@ -29,9 +29,15 @@
                         </label>
                         <input name="mobile" class="form-control required" placeholder="Enter Your Registered Mobile No" autofocus="autofocus" id="mobile" />
                     </div>
+
                     <div class="form-group mb-4">
-                        <input class="form-control" placeholder="Access Code" type="hidden" name="access_code" value="<?php echo $access_code; ?>" readonly>
+                        <label class="">
+                            Access Code<span class="text-danger">*</span>
+                        </label>
+                        <input class="form-control" placeholder="Access Code" type="text" name="access_code" value="<?php echo set_value ('access_code'); ?>" >
+                        <p class="text-muted">If you don't have access code, contact your coaching-center/institution</p>
                     </div>
+
 
                     <div class="d-flex justify-content-between align-items-center">
                         <button type="submit" class="btn btn-primary" >Send OTP</button>

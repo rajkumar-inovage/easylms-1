@@ -9,6 +9,7 @@
 	                </p>
             	</div>
             </div>
+
             <div class="form-side">
                 <?php if ( is_file ($logo)) { ?>
                     <img src="<?php echo $logo; ?>" height="50" title="<?php echo $page_title; ?>" class="text-center">
@@ -20,10 +21,14 @@
                 	<div class="alert alert-info">
                 		You will recieve Access Code on your registered mobile number and email (if given).
                 	</div>
-                    <label class="form-group has-float-label mb-4">
+
+                    <div class="form-group mb-4">
+                        <label class="">
+                            Mobile No<span class="text-danger">*</span>
+                        </label>
                         <input name="mobile" class="form-control required" placeholder="Enter Your Registered Mobile No" autofocus="autofocus" id="mobile" />
-                        <span>Mobile No<span class="text-danger">*</span></span>
-                    </label>
+                    </div>
+
                     <div class="d-flex justify-content-between align-items-center">
                         <button type="submit" class="btn btn-success" >Send Access Code</button>
                     </div>

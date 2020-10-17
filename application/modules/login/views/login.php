@@ -37,7 +37,7 @@
                     </div>
 
                     <div class="form-group mb-4">
-                        <?php if ($access_code != '' && $found == true) { ?>
+                        <?php /* if ($access_code != '' && $found == true) { ?>
                             <input class="form-control" placeholder="Access Code" type="hidden" name="access_code" value="<?php echo $access_code; ?>" readonly>
                         <?php } else { ?>
                             <label class="">
@@ -45,8 +45,17 @@
                             </label>
                             <input class="form-control" placeholder="Access Code" type="text" name="access_code" value="<?php echo $access_code; ?>" >
                             <a href="<?php echo site_url ('login/user/get_access_code'); ?>" class="text">Get Access Code</a>
-                        <?php } ?>
+                        <?php } */ ?>
                     </div>
+
+                    <div class="form-group mb-4">
+                        <label class="">
+                            Access Code<span class="text-danger">*</span>
+                        </label>
+                        <input class="form-control" placeholder="Access Code" type="text" name="access_code" value="<?php echo set_value ('access_code'); ?>" >
+                        <a href="<?php echo site_url ('login/user/get_access_code'); ?>" class="text-info">Get Access Code</a>
+                    </div>
+
 
                     <div class="d-flex justify-content-between align-items-center">
                         <button class="btn btn-primary btn-lg btn-shadow" type="submit">LOGIN</button>
