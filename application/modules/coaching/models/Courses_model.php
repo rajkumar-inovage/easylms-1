@@ -21,11 +21,10 @@ class Courses_model extends CI_Model {
 		return $categories;
 	}
 	
-	public function courses_uncategorized($coaching_id){
+	public function courses_uncategorized ($coaching_id=0) {
 		$this->db->select('count(course_id) as uncategorized_courses');
 		$this->db->where('coaching_id', $coaching_id);
-		$this->db->where('cat_id', 0);
-		$this->db->or_where('cat_id', NULL);
+		$this->db->where('(cat_id=0 OR cat_id=NULL)');
 		$sql = $this->db->get('coaching_courses');
 		extract($sql->row_array());
 		return $uncategorized_courses;
@@ -39,8 +38,7 @@ class Courses_model extends CI_Model {
 		if ($cat_id == '-1') {
 			
 		} else if ($cat_id == 0) {
-			$this->db->where ('CC.cat_id', 0);
-			$this->db->or_where ('CC.cat_id', NULL);
+			$this->db->where('(CC.cat_id=0 OR CC.cat_id="NULL")');
 		} else {
 			$this->db->where ('CC.cat_id', $cat_id);
 		}
@@ -107,8 +105,7 @@ class Courses_model extends CI_Model {
 
 	public function count_un_courses ($coaching_id=0) {
 		$this->db->where ('CC.coaching_id', $coaching_id);
-		$this->db->where ('CC.cat_id', 0);
-		$this->db->or_where ('CC.cat_id', NULL);
+		$this->db->where('(cat_id=0 OR cat_id="NULL")');
 		$sql = $this->db->get('coaching_courses CC');
 		$num = $sql->num_rows ();
 		return $num;
@@ -125,7 +122,7 @@ class Courses_model extends CI_Model {
 		if($status != CATEGORY_STATUS_ALL){
 			$this->db->where('coaching_courses.status', $status);
 		}
-		if($cat_id>0){
+		if ($cat_id > 0) {
 			$this->db->where('coaching_courses.cat_id', $cat_id);
 		}
         $this->db->where('coaching_courses.coaching_id', $coaching_id);

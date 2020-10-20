@@ -103,7 +103,11 @@
 
 
         <a class="navbar-logo" href="<?php echo $this->common_model->coaching_url($coaching_id); ?>">
-            <span class="logo d-block d-xs-block"<?php echo $this->common_model->coaching_logo($coaching_id); ?>></span>
+            <?php if ($logo = $this->common_model->coaching_logo ($coaching_id)) { ?>
+                <span class="logo d-block d-xs-block" <?php echo $logo; ?> ></span>
+            <?php } else { ?>
+                <span class=" d-block d-xs-block"><?php echo $this->session->userdata ('coaching_name'); ?></span>
+            <?php } ?>
             <!-- <span class="logo-mobile d-block d-xs-none"></span> -->
         </a>
 

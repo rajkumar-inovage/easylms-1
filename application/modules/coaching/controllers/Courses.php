@@ -11,6 +11,7 @@ class Courses extends MX_Controller {
 	}
 
 	public function index ($coaching_id=0, $cat_id='-1') {
+		
 		$data['page_title'] = 'Courses';
 		$is_admin = USER_ROLE_COACHING_ADMIN === intval($this->session->userdata('role_id'));
 		if($is_admin):
@@ -22,6 +23,7 @@ class Courses extends MX_Controller {
 		$data['coaching_id'] = $coaching_id;
 		$data['categories'] = $this->courses_model->course_categories($coaching_id);
 		$data['courses_uncategorized'] = $this->courses_model->courses_uncategorized($coaching_id);
+
 		$data['count_un'] = $this->courses_model->count_un_courses ($coaching_id);
 		$data['count_all'] = $this->courses_model->count_all_courses ($coaching_id);
 		if ($is_admin) {
