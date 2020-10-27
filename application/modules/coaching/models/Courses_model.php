@@ -24,7 +24,7 @@ class Courses_model extends CI_Model {
 	public function courses_uncategorized ($coaching_id=0) {
 		$this->db->select('count(course_id) as uncategorized_courses');
 		$this->db->where('coaching_id', $coaching_id);
-		$this->db->where('(cat_id=0 OR cat_id=NULL)');
+		$this->db->where('(cat_id=0 OR cat_id="NULL")');
 		$sql = $this->db->get('coaching_courses');
 		extract($sql->row_array());
 		return $uncategorized_courses;
